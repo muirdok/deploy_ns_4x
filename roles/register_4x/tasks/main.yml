@@ -1,0 +1,47 @@
+---
+- name: Add IP to VMName to inventory 
+  add_host:
+    name: "{{ config_vm_name_4x }}"
+    ansible_ssh_host: "{{ config_vm_ip_4x }}"
+    ansible_ssh_user: "{{ config_applaince_root }}"
+    ansible_ssh_pass: "{{ config_applaince_root_pass_4x }}"
+    ansible_connection: "ssh"
+    ansible_ssh_private_key_file: "/root/.ssh/id_rsa.pub"
+
+- name: Get the license
+  shell: /root/nlm-com/gen-com-key.pl `sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'machinesig'`  TRIA 3
+  register: command_output
+        
+- debug: msg="{{command_output.stdout}}"
+
+- name: Set the license
+  shell: sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'echo {{ command_output.stdout }} > /var/lib/nza/nlm.key'
+
+- name: restart NMS
+  shell: sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'svcadm restart nms'
+
+- name: Delay for 20 seconds  for NMS
+  pause:
+   seconds: 25
+- name: Upgrade NS to current version
+  block:
+    - name: Upgrade commands
+      shell: |
+        sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'mount -F nfs 10.3.70.8:/volumes/alpo/qa_depot /mnt/'
+        sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'lofiadm -a /mnt/"{{ update_iso_path }}"'
+        sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'mkdir /media/NS_UpgradeCD'
+        sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'mount -F hsfs /dev/lofi/1 /media/NS_UpgradeCD'
+        sshpass -p '{{config_applaince_root_pass_4x }}' ssh root@{{ config_vm_ip_4x }} 'nmc -c "setup appliance upgrade -yvc"'
+      ignore_errors: true
+     
+    - name: Delay for 10 minutes for Upgrade proccess
+      pause:
+       seconds: 600
+  when: upgrade_to_fp
+  rescue:
+   - debug:
+       msg: 'UNABLE TO UPGRADE'
+
+
+
+...

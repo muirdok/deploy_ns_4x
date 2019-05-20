@@ -1,0 +1,29 @@
+---
+config_ci_build: "test_build"
+config_ci_delay: 10
+
+pxe_iso_name: "NexentaStor5.1.2_FP1_CP5_CERT.iso"
+napalm_user: "xx"
+napalm_pass: "xx"
+
+config_applaince_root: "root"
+config_applaince_root_pass: "plusultra"
+config_applaince_root_pass_4x: "nexenta"
+config_applaince_admin: "admin"
+config_applaince_admin_pass: "nexenta"
+config_applaince_pool: "kek"
+config_applaince_pool_fs: "fs1"
+
+config_vm_name: "TestVM"
+config_vm_name_4x: "TestVM_4x"
+config_vm_uuid:  "kek"
+
+config_vm_ip_4x: "10.3.69.118"
+
+#testrail_settings_path: /tmp/
+old_testrun: 4604
+new_testrun: 4712
+# 4.x
+4x_mount_point: "/volumes"
+update_iso_path: "isos_tools/4.0.5-FP4/NexentaStor_UpgradeDVD-4.0.5-FP4.iso"
+...

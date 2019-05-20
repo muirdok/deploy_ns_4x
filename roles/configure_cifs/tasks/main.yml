@@ -1,0 +1,18 @@
+---
+- name: Join NS to AD
+  block:
+    - name: Set full ACL for directory
+      command: chmod 777 /"{{ config_applaince_pool }}"/"{{ config_applaince_pool_fs }}"
+    - name: Set DNS server for AD Server
+      shell: nmc -c  "setup network nameservers -1 "{{ ad_ip }}" -2 "{{ ad_ip }}" -3 "{{ ad_ip }}""
+    - name: Disable NTP
+      command: svcadm disable ntp
+    - name: sync time with AD
+      command: ntpdate "{{ ad_name }}"
+    - name: sync time with AD
+      command: /usr/nef/cli/sbin/smb join domain "{{ ad_admin }}" --password="{{ ad_admin_pass }}" "{{ ad_name }}"
+  when: ad_name is defined and ad_ip is defined
+  rescue:
+   - debug:
+       msg: 'UNABLE TO JOIN TO AD. SUCKS!'
+...

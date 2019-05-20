@@ -1,0 +1,21 @@
+---
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+     - roles/vars/common.yml
+  roles:
+     - { role: create_pxe_env_4x, clean_all: true }
+     - { role: create_and_install_vm_4x }
+- hosts: localhost
+  gather_facts: no
+  vars_files:
+     - roles/vars/common.yml
+  roles:
+     - { role: register_4x, tags: "reg_4x" }
+- hosts: "{{ config_vm_name_4x }}"
+  vars_files:
+     - roles/vars/common.yml
+  roles:
+     - { role: upgrade_appaliance, tags: "upgrade_to_fp" }
+     - { role: configure_cifs, tags: "ad_only" }
+...

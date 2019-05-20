@@ -1,0 +1,7 @@
+default 0
+timeout 10
+
+title NexentaStor 4.0.5 nodea #9
+kernel {{ pxe_unpacked_isos }}/{{ pxe_path }}/platform/i86pc/kernel/amd64/unix -B iso_nfs_path={{ pxe_nfs_server }}:{{ pxe_tftpboot }}/{{ pxe_unpacked_isos }}/{{ pxe_path }} -B auto_install=1,gateway=10.3.64.1,dns_ip_1=8.8.8.8,nic_primary=vmxnet3s1,time_zone=US/Pacific,syspool_luns=c0t0d0,ipaddr_vmxnet3s1={{ config_vm_ip_4x }},netmask_vmxnet3s1=255.255.240.0
+module NEF/{{ pxe_path }}/platform/i86pc/amd64/miniroot
+
